@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+<script>
+  //grab the canvas
+  const canvas = document.querySelector('#draw');
+  const ctx = canvas.getContext('2d');
+  //set the size of canvas
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  //stroke color
+  ctx.strokeStyle = '#006600';
+  //corner
+  ctx.lineJoin = 'round';
+  //shape
+  ctx.lineCap = 'round';
+  //粗细
+  ctx.lineWidth = 80;
+  //by default (just mouse over the canvas) won't draw. When mouse down will set it to true, mouse up set it to false
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  let hue = 0;
+  let direction = true;
+  //blend mode;
+  //ctx.globalCompositeOperation = 'multiply';
+
+  function draw(e) {
+    //stop the function
+    if (!isDrawing) return;
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+    //star a path
+    ctx.beginPath();
+    //starting point
+    ctx.moveTo(lastX, lastY);
+    //end point
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+    //改变hue，创造颜色渐变，和lineWidth
+    hue++;
+    if (hue >= 360) {
+      hue = 0;
+    }
+    //if lineWidth粗过90，将佢变细。如果细过10，将佢变粗
+    if (ctx.lineWidth >= 90 || ctx.lineWidth <=10) {
+      direction =!direction;
+    }
+    if (direction) {
+      ctx.lineWidth++;
+    } else {
+      ctx.lineWidth--;
+    }
+  }
+   
+  canvas.addEventListener('mousedown', (e) => {
+    //enable drawing
+    isDrawing = true;
+    //update the X and Y
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  });
+
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseout', () => isDrawing = false);
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>
